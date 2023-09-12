@@ -3,3 +3,5 @@ This repo contains a collection of scripts and examples.
 acp - Archive copy script
 site-checker.py - Web infrastructure health check tool
 logparser.pl - Realtime web log analysis tool
+yum-sync.sh - Yum repository replication tool
+yum-publich.sh - Yum repository replication tool
