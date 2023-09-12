@@ -1,0 +1,78 @@
+---
+sites:
+  mywebapp:
+    dev:
+      domain: 'mysite.com'
+      lb:   'www-dev-lb.mysite.com'
+      servers: [ '01', '02' ]
+      check-string:     True
+      check-redirect:   False
+      check-http-redir: False
+      check-http:       True
+      check-https:      True
+      check-status:     True
+      check-info:       True
+      check-php:        True
+      check-lb:         True
+      check-health:     False
+      check-servers:    True
+    tst:
+      domain: 'mysite.com'
+      lb:   'www-tst-lb.mysite.com'
+      servers: [ '01', '02' ]
+      check-string:     True
+      check-redirect:   False
+      check-http-redir: False
+      check-http:       True
+      check-https:      True
+      check-status:     True
+      check-info:       True
+      check-php:        True
+      check-lb:         True
+      check-health:     False
+      check-servers:    True
+    stg:
+      domain: 'mysite.com'
+      lb:   'www-stg-lb.mysite.com'
+      servers: [ '01', '02' ]
+      check-string:     True
+      check-redirect:   False
+      check-http-redir: False
+      check-http:       True
+      check-https:      True
+      check-status:     True
+      check-info:       True
+      check-php:        True
+      check-lb:         True
+      check-health:     False
+      check-servers:    True
+    prd:
+      domain: 'mysite.com'
+      lb:   'www-prd-lb.mysite.com'
+      servers: [ '01', '02', '03' ]
+      check-string:     True
+      check-redirect:   False
+      check-http-redir: True
+      check-http:       True
+      check-https:      True
+      check-status:     True
+      check-info:       True
+      check-php:        True
+      check-lb:         True
+      check-health:     True
+      check-servers:    True
+    public:
+      domain: 'mysite.com'
+      lb:   'www-prd-lb.mysite.com'
+      servers: [ '01', '02', '03' ]
+      check-string:     True
+      check-redirect:   False
+      check-http-redir: True
+      check-http:       True
+      check-https:      True
+      check-status:     True
+      check-info:       True
+      check-php:        True
+      check-lb:         True
+      check-health:     False
+      check-servers:    False
