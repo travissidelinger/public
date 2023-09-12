@@ -1,0 +1,131 @@
+#!/bin/bash
+##############################################
+# This script creates archived file backups
+# Default mode (archive), rename and copy the file|dir.
+# Backup mode, copy the file|dir
+#
+# Authored by: Travis Sidelinger
+# Version History
+#  - 2022-01-07 - Initial release (Remake of an old script from Eric Nickolas)
+#  - 2022-01-10 - Added new features for backup mode
+#  - 2022-01-21 - Update the help info
+#
+##############################################
+
+## Variables ##
+
+OLDFILE=''
+NEWFILE=''
+DATE_SHORT=`date +%Y%m%d`
+DATE_LONG=`date +%Y%m%d_%H%M%S`
+VERBOSE=''
+FILES=()
+POSTFIX=''
+MODE='archive'
+
+## Functions ##
+
+showhelp()
+{
+    echo "This script creates archived file backups"
+    echo ""
+    echo "Usage: ${0} <file> <file> <directory>"
+    echo "Options:"
+    echo "  --help           Show help"
+    echo "  --verbose        Show more details"
+    echo "  --debug          Enable debugging"
+    echo "  --suffix <###>   Sellect a suffix"
+    echo "  -f, --force      Force backup overwrite"
+    echo "  -a, --archive    Archive the file(s) (aka, rename them) (default mode)"
+    echo "  -b, --backup     Backup the file(s) (aka, copy them)"
+    echo ""
+    echo "Example: $0 /etc/ntp.conf"
+    echo "Result: create this file: /etc/ntp.conf.20220107"
+    echo ""
+    }
+
+## Input ##
+
+while (( $# ))
+do
+   case "${1}" in
+     '--help')         showhelp;           shift 1; exit ;;
+     '--verbose')      VERBOSE=1;          shift 1;;
+     '--debug')        set -vx;            shift 1;;
+     '--postfix')      POSTFIX=${2};       shift 2;;
+     '-f'|'--force')   FORCE=1;            shift 1;;
+     '-b'|'--backup')  MODE='backup';      shift 1;;
+     '-a'|'--archive') MODE='archive';     shift 1;;
+     *)                FILES+=( "${1}" );  shift 1;;
+   esac
+   if [ ${VERBOSE} ]; then echo "Input option: ${1}"; fi
+done
+
+## Main ##
+
+for OLDFILE in "${FILES[@]}"
+do
+    if [ ${VERBOSE} ]; then echo "Processing file: ${OLDFILE}"; fi
+
+    if [ ${POSTFIX} ];
+    then
+        NEWFILE="${OLDFILE}.${POSTFIX}";
+        while [ -f "${NEWFILE}" ]; do NEWFILE="${NEWFILE}.${POSTFIX}"; done
+    else
+        NEWFILE="${OLDFILE}.${DATE_SHORT}"
+        # Check for collisions
+        if [ -f "${NEWFILE}" ]; then NEWFILE="${OLDFILE}.${DATE_LONG}"; fi
+    fi
+
+    # Verbose output
+    if [ ${VERBOSE} ]; then echo "Backing up file ${OLDFILE} to ${NEWFILE}"; fi
+
+    # Do the actual archive/backup
+    if [ ${FORCE} ];
+    then
+        if   [ "${MODE}" = 'archive' ]; then mv -f "${OLDFILE}" "${NEWFILE}"
+        elif [ "${MODE}" = 'backup'  ]; then cp -a -f "${OLDFILE}" "${NEWFILE}"
+        else                                 echo "Unknown mode!!"; exit 1; fi
+    else
+        if   [ "${MODE}" = 'archive' ]; then mv --no-clobber "${OLDFILE}" "${NEWFILE}"
+        elif [ "${MODE}" = 'backup' ];  then cp -a --no-clobber "${OLDFILE}" "${NEWFILE}"
+        else                                 echo "Unknown mode!!"; exit 1; fi
+    fi
+
+    # Error checking
+    if [ ${!} ]; then echo "Something went wrong.  File move may have attempted to clobber"; exit 1; fi
+
+    # Restore the original file for archive mode
+    if [ "${MODE}" = 'archive' ]
+    then
+        if [ -f "${NEWFILE}" ]
+        then
+            # The file is a file
+            if [ ! -f "${OLDFILE}" ];
+            then
+                cp -aZ "${NEWFILE}" "${OLDFILE}";
+            else
+                echo "Something went wrong.  The old file still exists."
+                exit 1
+            fi
+        elif [ -d "${NEWFILE}" ]
+        then
+            # The file is a directory
+            if [ ! -d "${OLDFILE}" ]
+            then
+                cp -RaZ "${NEWFILE}" "${OLDFILE}";
+            else
+                echo "Something went wrong.  The old directory still exists."
+                exit 1
+            fi
+        else
+            echo "Something went wrong.  File backup does not exist"
+            exit 1
+        fi
+    fi
+done
+
+
+## End ##
+
+exit
