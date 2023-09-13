@@ -206,15 +206,10 @@ while( <> )
         {
             ( $linedata{DATE_TIME}, $linedata{IPADDR}, $linedata{USER}, $linedata{METHOD}, $linedata{URL}, $linedata{STATUS}, $linedata{BYTESOUT}, $linedata{EXECTIME}, $linedata{USERAGENT} ) = ( $line =~ m|^\[(.+?)\] ([0-9a-f\.:]+) ([a-zA-Z0-9\-]+) ([A-Z\-]+) (.+?) s=([0-9]+) b=([0-9]+) t=([0-9]+) ref=".*?" [au]{2}="(.*?)"| );
             }
-        # [17/Apr/2023:03:19:07 +0000] 65.175.142.38 - GET http://-:80/ s=403 bi=12 bo=202 t=186 ref="-" ua="-"
-        # new format as of mid march, fixed au= to ua=, added bytes-in
         elsif( $line =~ m|^\[(.+?)\] ([0-9a-f\.:]+) ([a-zA-Z0-9\-]+) ([A-Z\-]+) (.+?) s=([0-9]+) bi=([0-9]+) bo=([0-9]+) t=([0-9]+) ref=".*?" ua="(.*?)"| )
         {
            ( $linedata{DATE_TIME}, $linedata{IPADDR}, $linedata{USER}, $linedata{METHOD}, $linedata{URL}, $linedata{STATUS}, $linedata{BYTESIN}, $linedata{BYTESOUT}, $linedata{EXECTIME}, $linedata{USERAGENT} ) = ( $line =~ m|^\[(.+?)\] ([0-9a-f\.:]+) ([a-zA-Z0-9\-]+) ([A-Z\-]+) (.+?) s=([0-9]+) bi=([0-9]+) bo=([0-9]+) t=([0-9]+) ref=".*?" ua="(.*?)"| );
            }
-        # new format as of 2023Apr18, removed the referenece value, put quotes around the URL because they can contain spaces and other charactors
-        # [21/Apr/2023:16:34:16 +0000] 10.223.224.103 - GET url="http://app.mysite.com:443/images/frontend/shortcuts-icon.png" s=304 bi=2049 bo=- t=467 ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
-        # [21/Apr/2023:03:31:42 +0000] 172.21.16.108 - GET url="http://app.mysite.com:443/images/frontend/logo-app.png" s=304 bi=2559 bo=- t=1107 ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
         elsif( $line =~ m|^\[(.+?)\] ([0-9a-f\.:]+) ([a-zA-Z0-9\-]+) ([A-Z\-]+) url="(.+?)" s=([0-9]+) bi=([0-9\-]+) bo=([0-9\-]+) t=([0-9\-]+) ua="(.*?)"| )
         {
            ( $linedata{DATE_TIME}, $linedata{IPADDR}, $linedata{USER}, $linedata{METHOD}, $linedata{URL}, $linedata{STATUS}, $linedata{BYTESIN}, $linedata{BYTESOUT}, $linedata{EXECTIME}, $linedata{USERAGENT} ) = ( $line =~ m|^\[(.+?)\] ([0-9a-f\.:]+) ([a-zA-Z0-9\-]+) ([A-Z\-]+) url="(.+?)" s=([0-9]+) bi=([0-9\-]+) bo=([0-9\-]+) t=([0-9\-]+) ua="(.*?)"| );
