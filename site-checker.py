@@ -37,13 +37,13 @@ site_input_list = [ ]
 conf = {
   'DEBUG':              0,
   'VERBOSE':            0,
-  'username':           'load',
-  'password':           'ZjUxOWU4Mjg2ZTU3ZTA',
+  'username':           'test',
+  'password':           'xxxxxxxxxxxx',
   'AUTH':               '',
   'WARN':               '3',
   'CRIT':               '4',
   'TIMEOUT':            '5',
-  'STRING':             'PAGE_LOAD_COMPLETED',
+  'STRING':             'PAGE_LOAD_STRING',
   'SSL_OPTS':           ' --ssl=1.2 --verify-host --sni',
   'SSL_OPTS2':          ' --ssl=1.2 --verify-host --sni --certificate=30 --continue-after-certificate',
   'CHECK_HTTP_BIN':     os.environ.get('HOME') + '/bin/check_http',
@@ -56,7 +56,7 @@ conf = {
   'PRDONLY':            0,
   'PUBONLY':            0,
   'INTONLY':            0,
-  'DNS_SERVER':         '216.10.160.19',
+  'DNS_SERVER':         '8.8.8.8',
   'MODE':               'CHECK',
   }
 
