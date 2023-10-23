@@ -10,6 +10,9 @@
 #  2023Aug01 - Added --public
 #  2023Aug11 - Added --list and --list-all
 #  2023Sep07 - Added per server requests
+#  2023Oct13 - Added color to PASS and FAIL
+#  2023Oct17 - Added session totals
+#              Added loadavg
 #
 #################################################
 
@@ -37,13 +40,13 @@ site_input_list = [ ]
 conf = {
   'DEBUG':              0,
   'VERBOSE':            0,
-  'username':           'test',
-  'password':           'xxxxxxxxxxxx',
+  'username':           'xxxx',
+  'password':           'xxxx',
   'AUTH':               '',
   'WARN':               '3',
   'CRIT':               '4',
   'TIMEOUT':            '5',
-  'STRING':             'PAGE_LOAD_STRING',
+  'STRING':             'PAGE_LOAD_COMPLETED',
   'SSL_OPTS':           ' --ssl=1.2 --verify-host --sni',
   'SSL_OPTS2':          ' --ssl=1.2 --verify-host --sni --certificate=30 --continue-after-certificate',
   'CHECK_HTTP_BIN':     os.environ.get('HOME') + '/bin/check_http',
@@ -56,8 +59,11 @@ conf = {
   'PRDONLY':            0,
   'PUBONLY':            0,
   'INTONLY':            0,
-  'DNS_SERVER':         '8.8.8.8',
+  'DNS_SERVER':         'x.x.x.x',
   'MODE':               'CHECK',
+  'RED':                '\033[0;31m',
+  'GREED':              '\033[0;32m',
+  'NOCOLOR':            '\033[0m'
   }
 
 conf['AUTH'] = ' --authorization=' + '"' + conf['username'] + ':' + conf['password'] + '"';
@@ -140,33 +146,33 @@ def check_http_str( host, ipaddr, port, path, string ):
         if( len( re.split( ' ', output_split[0] ) ) >= 4 ): code = ( re.split( ' ', output_split[0] ) )[3];
         else: code = output;
         if( re.match( '^2', code ) ):
-            if( conf['VERBOSE'] ): status = 'PASS ' + code + ', ' + output_split[1]
-            else:                  status = 'PASS ' + code;
+            if( conf['VERBOSE'] ): status = '\033[0;32mPASS\033[0m ' + code + ', ' + output_split[1]
+            else:                  status = '\033[0;32mPASS\033[0m ' + code;
         else:
-            if( conf['VERBOSE'] ): status = 'FAIL ' + code + ', ' + output_split[1]
-            else:                  status = 'FAIL ' + code;
+            if( conf['VERBOSE'] ): status = '\033[0;31mFAIL\033[0m ' + code + ', ' + output_split[1]
+            else:                  status = '\033[0;31mFAIL\033[0m ' + code;
     elif( re.match('^HTTP WARN:', output ) ):
         output_split = re.split( '\|| - ', output )
         # Item number 3 should be the http status code
         if( len( re.split( ' ', output_split[0] ) ) >= 4 ): code = ( re.split( ' ', output_split[0] ) )[3];
         else: code = output;
         if( re.match( '^2', code ) ):
-            if( conf['VERBOSE'] ): status = 'PASS ' + code + ', ' + output_split[1]
-            else:                  status = 'PASS ' + code;
+            if( conf['VERBOSE'] ): status = '\033[0;32mPASS\033[0m ' + code + ', ' + output_split[1]
+            else:                  status = '\033[0;32mPASS\033[0m ' + code;
         else:
-            if( conf['VERBOSE'] ): status = 'FAIL ' + code + ', ' + output_split[1]
-            else:                  status = 'FAIL ' + code;
+            if( conf['VERBOSE'] ): status = '\033[0;31mFAIL\033[0m ' + code + ', ' + output_split[1]
+            else:                  status = '\033[0;31mFAIL\033[0m ' + code;
     elif( re.match('CRITICAL', output ) ):
         if( conf['VERBOSE'] ):
             output_split = re.split( '\|', output )
-            status = 'FAIL ' + output_split[0];
+            status = '\033[0;31mFAIL\033[0m ' + output_split[0];
         else:
             output_split = re.split( '\|| - ', output )
-            status = 'FAIL ' + output_split[0]
+            status = '\033[0;31mFAIL\033[0m ' + output_split[0]
     else:
         output_split = re.split( '\|| - ', output )
-        if( conf['VERBOSE'] ): status = 'FAIL ' + output
-        else:                  status = 'FAIL ' + output_split[0]
+        if( conf['VERBOSE'] ): status = '\033[0;31mFAIL\033[0m ' + output
+        else:                  status = '\033[0;31mFAIL\033[0m ' + output_split[0]
 
     ## Return ##
     return( status )
@@ -218,33 +224,33 @@ def check_http_redirect( host, ipaddr, port, path ):
         if( len( re.split( ' ', output_split[0] ) ) >= 4 ): code = ( re.split( ' ', output_split[0] ) )[3];
         else: code = output;
         if( re.match( '^3', code ) ):
-            if( conf['VERBOSE'] ): status = 'PASS ' + code + ', ' + output_split[1]
-            else:                  status = 'PASS ' + code;
+            if( conf['VERBOSE'] ): status = '\033[0;32mPASS\033[0m ' + code + ', ' + output_split[1]
+            else:                  status = '\033[0;32mPASS\033[0m ' + code;
         else:
-            if( conf['VERBOSE'] ): status = 'FAIL ' + code + ', ' + output_split[1]
-            else:                  status = 'FAIL ' + code;
+            if( conf['VERBOSE'] ): status = '\033[0;31mFAIL\033[0m ' + code + ', ' + output_split[1]
+            else:                  status = '\033[0;31mFAIL\033[0m ' + code;
     elif( re.match('^HTTP WARN:', output ) ):
         output_split = re.split( '\|| - ', output )
         # Item number 3 should be the http status code
         if( len( re.split( ' ', output_split[0] ) ) >= 4 ): code = ( re.split( ' ', output_split[0] ) )[3];
         else: code = output;
         if( re.match( '^3', code ) ):
-            if( conf['VERBOSE'] ): status = 'PASS ' + code + ', ' + output_split[1]
-            else:                  status = 'PASS ' + code;
+            if( conf['VERBOSE'] ): status = '\033[0;32mPASS\033[0m ' + code + ', ' + output_split[1]
+            else:                  status = '\033[0;32mPASS\033[0m ' + code;
         else:
-            if( conf['VERBOSE'] ): status = 'FAIL ' + code + ', ' + output_split[1]
-            else:                  status = 'FAIL ' + code;
+            if( conf['VERBOSE'] ): status = '\033[0;31mFAIL\033[0m ' + code + ', ' + output_split[1]
+            else:                  status = '\033[0;31mFAIL\033[0m ' + code;
     elif( re.match('CRITICAL', output ) ):
         if( conf['VERBOSE'] ):
             output_split = re.split( '\|', output )
-            status = 'FAIL ' + output_split[0];
+            status = '\033[0;31mFAIL\033[0m ' + output_split[0];
         else:
             output_split = re.split( '\|| - ', output )
-            status = 'FAIL ' + output_split[0]
+            status = '\033[0;31mFAIL\033[0m ' + output_split[0]
     else:
         output_split = re.split( '\|| - ', output )
-        if( conf['VERBOSE'] ): status = 'FAIL ' + output
-        else:                  status = 'FAIL ' + output_split[0]
+        if( conf['VERBOSE'] ): status = '\033[0;31mFAIL\033[0m ' + output
+        else:                  status = '\033[0;31mFAIL\033[0m ' + output_split[0]
 
     ## Return ##
     return( status )
@@ -296,25 +302,25 @@ def check_http_cmd( host, ipaddr, port, path ):
         # Item number 3 should be the http status code
         if( len( re.split( ' ', output_split[0] ) ) >= 4 ): code = ( re.split( ' ', output_split[0] ) )[3];
         else: code = output;
-        if( conf['VERBOSE'] ): status = 'PASS ' + code + ', ' + output_split[1]
-        else:                  status = 'PASS ' + code;
+        if( conf['VERBOSE'] ): status = '\033[0;32mPASS\033[0m ' + code + ', ' + output_split[1]
+        else:                  status = '\033[0;32mPASS\033[0m ' + code;
     elif( re.match('^HTTP WARN:', output ) ):
         output_split = re.split( '\|| - ', output )
         # Item number 3 should be the http status code
         if( len( re.split( ' ', output_split[0] ) ) >= 4 ): code = ( re.split( ' ', output_split[0] ) )[3];
         else: code = output;
-        if( conf['VERBOSE'] ): status = 'PASS ' + code + ', ' + output_split[1]
-        else:                  status = 'PASS ' + code;
+        if( conf['VERBOSE'] ): status = '\033[0;32mPASS\033[0m ' + code + ', ' + output_split[1]
+        else:                  status = '\033[0;32mPASS\033[0m ' + code;
     elif( re.match('CRITICAL', output ) ):
-        if( conf['VERBOSE'] ): status = 'FAIL ' + output;
+        if( conf['VERBOSE'] ): status = '\033[0;31mFAIL\033[0m ' + output;
         else:
             output_split = re.split( '\|| - ', output )
-            status = 'FAIL ' + output_split[0] + ' ' + output_split[1]
+            status = '\033[0;31mFAIL\033[0m ' + output_split[0] + ' ' + output_split[1]
     else:
-        if( conf['VERBOSE'] ): status = 'FAIL ' + output
+        if( conf['VERBOSE'] ): status = '\033[0;31mFAIL\033[0m ' + output
         else:
             output_split = re.split( '\|', output );
-            status = 'FAIL ' + output;
+            status = '\033[0;31mFAIL\033[0m ' + output;
 
     ## Return ##
     return( status )
@@ -333,7 +339,7 @@ def wget_match_str( host, port, path, pattern ):
     command = conf['WGET_BIN'] + ' -q ' + ' --http-user=' + conf['username'] + ' --http-password=' + conf['password'] + ' ' + url + ' -O - | grep "' + pattern + '"'
 
     # Run Command #
-    if conf['DEBUG']: print( 'Command: ', command )
+    if( conf['DEBUG'] ): print( 'Command: ', command )
     stream = os.popen( command )
     output = stream.read()
     output = output.strip( "\n" );
@@ -518,7 +524,7 @@ if( conf['MODE'] == 'CHECK' ):
 
                 # Check http redirect to https
                 if( sites_data['sites'][site][prod_status]['check-http-redir'] == True ):
-                    sys.stdout.write( '  HTTP-Redirect:   '  + check_http_redirect( hostname, hostname, '80',  '/' ) + "\n" )
+                    sys.stdout.write( '  Redirect->HTTPS: '  + check_http_redirect( hostname, hostname, '80',  '/' ) + "\n" )
 
                 # Check /check, both http and https
                 if( sites_data['sites'][site][prod_status]['check-http'] == True ):
@@ -529,7 +535,7 @@ if( conf['MODE'] == 'CHECK' ):
                 # Check /server-status
                 if( sites_data['sites'][site][prod_status]['check-status'] == True ):
                     server_status_check = check_http_cmd( hostname, hostname, '443', '/server-status' );
-                    if( re.match( '^PASS', server_status_check ) ):
+                    if( re.search( 'PASS', server_status_check ) ):
                         server_status_requests =  wget_match_str( hostname, '80', '/server-status', 'requests currently being processed'  )
                         server_status_requests = server_status_requests.strip( '<dt>' );
                         server_status_requests = server_status_requests.strip( '</dt>' );
@@ -545,7 +551,7 @@ if( conf['MODE'] == 'CHECK' ):
                 # Check /php-info
                 if( sites_data['sites'][site][prod_status]['check-php'] == True ):
                     php_info_check = check_http_str( hostname, hostname, '443', '/php-info', 'PHP Version' );
-                    if( re.match( '^PASS', php_info_check ) ):
+                    if( re.search( 'PASS', php_info_check ) ):
                         php_info_version = wget_match_str( hostname, '80', '/php-info', 'PHP Version <' )
                         php_info_version = re.sub( '<.*?>' , '', php_info_version )
                         php_info_version = re.sub( 'PHP Version ' , '', php_info_version )
@@ -562,18 +568,26 @@ if( conf['MODE'] == 'CHECK' ):
                 # Check each server
                 if( sites_data['sites'][site][prod_status]['check-servers'] == True ):
                     if( 'servers' in sites_data['sites'][site][prod_status].keys() ):
+                        total_requests = 0;
+                        total_idle = 0;
                         for number in sites_data['sites'][site][prod_status]['servers']:
                             server_name = short_hostname + number + '.' + sites_data['sites'][site][prod_status]['domain'];
                             sys.stdout.write( '  Server ' + prod_status + number + ':    ' + check_http_str( server_name, server_name, '80',  '/check', conf['STRING'] ) )
                             server_status_check = check_http_cmd( server_name, server_name, '80', '/server-status' );
-                            if( re.match( '^PASS', server_status_check ) ):
-                                server_status_requests = wget_match_str( hostname, '80', '/server-status', 'requests currently being processed'  )
+                            if( re.search( 'PASS', server_status_check ) ):
+                                server_status_requests = wget_match_str( server_name, '80', '/server-status', 'requests currently being processed'  )
                                 server_status_requests = server_status_requests.strip( '<dt>' );
                                 server_status_requests = server_status_requests.strip( '</dt>' );
                                 server_status_requests = re.sub( 'requests currently being processed', 'current', server_status_requests );
-                                sys.stdout.write( ' (' + server_status_requests + ")\n" )
+                                total_requests += int( re.findall( '\d+', server_status_requests )[0] );
+                                total_idle     += int( re.findall( '\d+', server_status_requests )[1] );
+                                server_load_avg = wget_match_str( server_name, '80', '/server-status', 'Server load:'  )
+                                server_load_avg = server_load_avg.strip( '<dt>Server ' );
+                                server_load_avg = server_load_avg.strip( '</dt>' );
+                                sys.stdout.write( ' (' + server_status_requests + ', ' + server_load_avg + ")\n" )
                             else:
                                 sys.stdout.write( " (FAIL)\n" )
+                        sys.stdout.write( '  Server Totals:            (' + str( total_requests ) + ' current, ' + str( total_idle ) + ' idle workers)' + "\n" );
 
                 # Check application health
                 if( sites_data['sites'][site][prod_status]['check-health'] == True ):
