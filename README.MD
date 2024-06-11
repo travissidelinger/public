@@ -15,3 +15,5 @@ yum-sync.sh - Yum repository replication tool
 yum-publich.sh - Yum repository replication tool
 
 yum-repos.conf - Example yum sync/publish config file
+
+ansible-cmd.sh - Super handy bash tool combining Ansible features: list groups, list group members, list all hosts, run remote commands, run playbooks
